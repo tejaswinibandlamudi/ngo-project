@@ -22,20 +22,20 @@ public class UserController {
     Logger logger = LoggerFactory.getLogger(UserController.class);
 
     @GetMapping("/users/login")
-    public ResponseEntity<String> login(@RequestParam("email") String email,
+    public ResponseEntity<User> login(@RequestParam("email") String email,
                                         @RequestParam("password") String password){
         try {
-            Boolean response = userService.loginUser(email, password);
-            logger.info(String.valueOf(response));
-            if (response)
-                return new ResponseEntity<>("User successfully logged in", HttpStatus.OK);
+            User user = userService.loginUser(email, password);
+            logger.info(String.valueOf(user));
+            if (!user.equals(User.EMPTY))
+                return new ResponseEntity<>(user, HttpStatus.OK);
 
-            else return new ResponseEntity<>("User password incorrect",
+            else return new ResponseEntity<>(user,
                     HttpStatus.FORBIDDEN);
         }
         catch(IndexOutOfBoundsException e){
             logger.error(Arrays.toString(e.getStackTrace()));
-            return new ResponseEntity<>("Email doesn't exist",
+            return new ResponseEntity<>(User.EMPTY,
                     HttpStatus.NOT_FOUND);
         }
     }
@@ -46,16 +46,16 @@ public class UserController {
     }
 
     @PostMapping("/users/register")
-    public ResponseEntity<String> register(@RequestBody User user) {
+    public ResponseEntity<User> register(@RequestBody User user) {
         try {
-            Boolean response = userService.registerUser(user.getEmail(), user.getFirstName(), user.getLastName(), user.getPassword());
-            logger.info(String.valueOf(response));
-            if (response)
-                return new ResponseEntity<>("User successfully created", HttpStatus.CREATED);
-            else return new ResponseEntity<>("User registration unsuccessful", HttpStatus.CONFLICT);
+            User user1 = userService.registerUser(user.getEmail(), user.getFirstName(), user.getLastName(), user.getPassword());
+            logger.info(String.valueOf(user1));
+            if (!user1.equals(User.EMPTY))
+                return new ResponseEntity<>(user1, HttpStatus.CREATED);
+            else return new ResponseEntity<>(user1, HttpStatus.CONFLICT);
         } catch (Exception e) {
             logger.error(Arrays.toString(e.getStackTrace()));
-            return new ResponseEntity<>("Something went wrong", HttpStatus.SERVICE_UNAVAILABLE);
+            return new ResponseEntity<>(User.EMPTY, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 }
