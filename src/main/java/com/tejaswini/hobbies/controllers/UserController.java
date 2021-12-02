@@ -5,6 +5,7 @@ import com.tejaswini.hobbies.services.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -50,11 +51,13 @@ public class UserController {
         try {
             User user1 = userService.registerUser(user.getEmail(), user.getFirstName(), user.getLastName(), user.getPassword());
             logger.info(String.valueOf(user1));
-            if (!user1.equals(User.EMPTY))
-                return new ResponseEntity<>(user1, HttpStatus.CREATED);
-            else return new ResponseEntity<>(user1, HttpStatus.CONFLICT);
+            return new ResponseEntity<>(user1, HttpStatus.CREATED);
+        } catch (DuplicateKeyException e) {
+            logger.error(Arrays.toString(e.getStackTrace()));
+            return new ResponseEntity<>(User.EMPTY, HttpStatus.CONFLICT);
         } catch (Exception e) {
             logger.error(Arrays.toString(e.getStackTrace()));
+            System.out.println(Arrays.toString(e.getStackTrace()));
             return new ResponseEntity<>(User.EMPTY, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }

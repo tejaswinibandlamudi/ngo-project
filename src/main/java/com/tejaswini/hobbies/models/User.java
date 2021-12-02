@@ -3,6 +3,8 @@ package com.tejaswini.hobbies.models;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.io.Serializable;
+
 @Document("User")
 public class User {
 
@@ -15,7 +17,7 @@ public class User {
 
     private Location location;
 
-    private static class Location {
+    private static class Location implements Serializable {
         float latitude;
         float longitude;
 
@@ -23,10 +25,27 @@ public class User {
             this.latitude = latitude;
             this.longitude = longitude;
         }
+
+        public static final Location EMPTY = new Location(-1, -1);
+
+        public float getLatitude() {
+            return latitude;
+        }
+
+        public void setLatitude(float latitude) {
+            this.latitude = latitude;
+        }
+
+        public float getLongitude() {
+            return longitude;
+        }
+
+        public void setLongitude(float longitude) {
+            this.longitude = longitude;
+        }
     }
 
-    public static final User EMPTY = new User().setFirstName("").setLastName("").setEmail("");
-
+    public static final User EMPTY = new User().setFirstName("").setLastName("").setEmail("").setLocation(Location.EMPTY);
 
     public String getFirstName() {
         return firstName;
@@ -68,8 +87,13 @@ public class User {
         return location;
     }
 
-    public User setLocation(float latitude, float longitude) {
-        this.location = new Location(latitude, longitude);
+    public User setLocation(Location location) {
+        this.location = location;
+        return this;
+    }
+
+    public User setEmptyLocation() {
+        this.location = Location.EMPTY;
         return this;
     }
 }

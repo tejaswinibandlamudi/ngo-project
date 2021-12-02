@@ -3,6 +3,7 @@ package com.tejaswini.hobbies.services;
 import com.tejaswini.hobbies.models.User;
 import com.tejaswini.hobbies.respositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -23,21 +24,18 @@ public class UserService {
         return passwordEncoder.matches(password, user.getPassword())? user: User.EMPTY;
     }
 
-    public User registerUser(String email, String firstName, String lastName, String password){
-        User user = new User();
-        user.setFirstName(firstName);
-        user.setLastName(lastName);
-        user.setEmail(email);
-        user.setPassword(passwordEncoder.encode(password));
+    public User registerUser(String email, String firstName, String lastName, String password)
+    throws DuplicateKeyException {
+        User user = new User()
+                .setFirstName(firstName)
+                .setLastName(lastName)
+                .setEmail(email)
+                .setPassword(passwordEncoder.encode(password))
+                .setEmptyLocation();
         System.out.println(password);
         System.out.println(passwordEncoder.encode(password));
-        try {
-            userRepository.insert(user);
-            return user;
-        }
-        catch(Exception e) {
-            return User.EMPTY;
-        }
+        userRepository.insert(user);
+        return user;
     }
 
     public List<User> getAllUsers() {
