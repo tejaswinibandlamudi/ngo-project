@@ -22,6 +22,7 @@ public class UserController {
 
     Logger logger = LoggerFactory.getLogger(UserController.class);
 
+    @CrossOrigin(origins = "https://uk29h.csb.app/")
     @GetMapping("/users/login")
     public ResponseEntity<User> login(@RequestParam("email") String email,
                                         @RequestParam("password") String password){
@@ -41,11 +42,13 @@ public class UserController {
         }
     }
 
+    @CrossOrigin(origins = "https://uk29h.csb.app/")
     @GetMapping("/users/all")
     public ResponseEntity<List<User>> getAllUsers() {
         return new ResponseEntity<>(userService.getAllUsers(), HttpStatus.OK);
     }
 
+    @CrossOrigin(origins = "https://uk29h.csb.app/")
     @PostMapping("/users/register")
     public ResponseEntity<User> register(@RequestBody User user) {
         try {
